@@ -1,6 +1,7 @@
 // load Express (server framework) and environment variables from .env
 import express from "express";
 import "dotenv/config";
+import { analyzeMeal } from "./tools/analyzeMeal.js";
 
 const app = express(); // creates my server instance
 app.use(express.json()); // lets Express automatically parse incoming JSON (so I can send data via POST)
@@ -13,20 +14,17 @@ app.get("/health", (_req, res) => {
 
 // --- Placeholder tool endpoint (I’ll replace this soon) ---
 // /tools/analyze meal route is a placeholder route - it just echoes a test response for now
-app.post("/tools/analyze_meal", (req, res) => {
-  const { query } = req.body || {};
+app.post("/tools/analyze_meal", async (req, res) => {
+    try {
+        const { query } = req.body || {};
+        if (!query) return res.status(400).json({ ok:false, error:"Missing 'query'" });
 
-  if (!query) {
-    return res.status(400).json({ ok: false, error: "Missing 'query'" });
-  }
-
-  // For now, just send back a dummy response
-  return res.json({
-    ok: true,
-    nutrients: { example: true },
-    note: "Stub endpoint – will connect to Edamam later"
+        const result = await analyzeMeal(query);
+        res.json({ ok: true, source: "openfoodfacts", ...result });
+    } catch (e) {
+        res.status(500).json({ ok:false, error: e.message })
+    }
   });
-});
 
 // --- Start the server ---
 const port = process.env.PORT || 3000;
