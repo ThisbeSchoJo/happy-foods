@@ -2,6 +2,7 @@
 import express from "express";
 import "dotenv/config";
 import { analyzeMeal } from "./tools/analyzeMeal.js";
+import { predictNeurochemistry } from "./tools/predictNeuro.js";
 
 const app = express(); // creates my server instance
 app.use(express.json()); // lets Express automatically parse incoming JSON (so I can send data via POST)
@@ -25,6 +26,19 @@ app.post("/tools/analyze_meal", async (req, res) => {
         res.status(500).json({ ok:false, error: e.message })
     }
   });
+
+app.post("/tools/predict_neurochemistry", (req, res) => {
+    try {
+        const { nutrients } = req.body || {};
+        if (!nutrients) {
+            return res.status(400).json({ ok: false, error: "Missing 'nutrients' object"})
+        }
+        const profile = predictNeurochemistry(nutrients);
+        res.json({ ok: true, profile });
+    } catch (e) {
+        res.status(500).json({ ok: false, error: e.message });
+    }
+});
 
 // --- Start the server ---
 const port = process.env.PORT || 3000;
