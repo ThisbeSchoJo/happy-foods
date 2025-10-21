@@ -3,6 +3,7 @@ import express from "express";
 import "dotenv/config";
 import { analyzeMeal } from "./tools/analyzeMeal.js";
 import { predictNeurochemistry } from "./tools/predictNeuro.js";
+import { explainEffects } from "./tools/explainEffects.js";
 
 const app = express(); // creates my server instance
 app.use(express.json()); // lets Express automatically parse incoming JSON (so I can send data via POST)
@@ -39,6 +40,20 @@ app.post("/tools/predict_neurochemistry", (req, res) => {
         res.status(500).json({ ok: false, error: e.message });
     }
 });
+
+app.post("/tools/explain_effects", (req, res) => {
+    try {
+        const { profile } = req.body || {};
+        if (!profile)
+            return res.status(400).json({ ok: false, error: "Missing 'profile' object" });
+
+        const text = explainEffects(profile);
+        res.json({ ok: true, explanation: text });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ ok: false, error: e.message });
+    }
+})
 
 // --- Start the server ---
 const port = process.env.PORT || 3000;
