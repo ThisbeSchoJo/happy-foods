@@ -117,7 +117,7 @@ app.post("/tools/explain_effects", (req, res) => {
 
 // --- MCP-style tool call endpoint (just for explain_effects) ---
 // This demonstrates the MCP pattern without changing existing endpoints
-app.post("/tools/call", (req, res) => {
+app.post("/tools/call", async (req, res) => {
   try {
     const { name, arguments: args } = req.body || {};
 
@@ -152,23 +152,23 @@ app.post("/tools/call", (req, res) => {
     }
 
     if (name === "analyze_meal") {
-        if (!args?.query) {
-            return res.status(400).json({
-                ok: false,
-                error: "Missing 'query' argument",
-            });
-        }
-        const result = await analyzeMeal(args.query);
-        return res.json({
-            ok: true,
-            tool: "analyze_meal",
-            result: {
-                product_name: result.product_name,
-                brand: result.brand,
-                serving_estimate_g: result.serving_estimate_g,
-                nutrients: result.nutrients
-            },
+      if (!args?.query) {
+        return res.status(400).json({
+          ok: false,
+          error: "Missing 'query' argument",
         });
+      }
+      const result = await analyzeMeal(args.query);
+      return res.json({
+        ok: true,
+        tool: "analyze_meal",
+        result: {
+          product_name: result.product_name,
+          brand: result.brand,
+          serving_estimate_g: result.serving_estimate_g,
+          nutrients: result.nutrients,
+        },
+      });
     }
 
     // All tools are now supported via MCP style
