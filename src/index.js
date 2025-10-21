@@ -151,10 +151,30 @@ app.post("/tools/call", (req, res) => {
       });
     }
 
-    // For now, only explain_effects and predict_neurochemistry are supported via MCP style
+    if (name === "analyze_meal") {
+        if (!args?.query) {
+            return res.status(400).json({
+                ok: false,
+                error: "Missing 'query' argument",
+            });
+        }
+        const result = await analyzeMeal(args.query);
+        return res.json({
+            ok: true,
+            tool: "analyze_meal",
+            result: {
+                product_name: result.product_name,
+                brand: result.brand,
+                serving_estimate_g: result.serving_estimate_g,
+                nutrients: result.nutrients
+            },
+        });
+    }
+
+    // All tools are now supported via MCP style
     return res.status(400).json({
       ok: false,
-      error: `Tool '${name}' not supported via MCP-style endpoint yet. Try /tools/${name}`,
+      error: `Unknown tool: '${name}'. Available tools: analyze_meal, predict_neurochemistry, explain_effects`,
     });
   } catch (e) {
     console.error("MCP-style tool execution error:", e);
