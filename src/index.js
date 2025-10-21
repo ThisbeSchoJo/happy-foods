@@ -14,46 +14,106 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "happy-foods" });
 });
 
-// --- Placeholder tool endpoint (I’ll replace this soon) ---
+// --- MCP-compatible tools discovery endpoint ---
+// /tools endpoint lists all available tools with their schemas (like MCP)
+app.get("/tools", (_req, res) => {
+  res.json({
+    tools: [
+      {
+        name: "analyze_meal",
+        description:
+          "Analyze a meal and extract nutritional data from OpenFoodFacts",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: {
+              type: "string",
+              description:
+                "Food item to analyze (e.g., 'matcha latte', 'chicken salad')",
+            },
+          },
+          required: ["query"],
+        },
+      },
+      {
+        name: "predict_neurochemistry",
+        description:
+          "Predict neurotransmitter effects based on nutritional data",
+        inputSchema: {
+          type: "object",
+          properties: {
+            nutrients: {
+              type: "object",
+              description: "Nutritional data object with various nutrients",
+            },
+          },
+          required: ["nutrients"],
+        },
+      },
+      {
+        name: "explain_effects",
+        description: "Explain neurotransmitter effects in human-friendly text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            profile: {
+              type: "object",
+              description:
+                "Neurotransmitter profile with serotonin, dopamine, gaba, acetylcholine scores",
+            },
+          },
+          required: ["profile"],
+        },
+      },
+    ],
+  });
+});
+
+// --- Placeholder tool endpoint (I'll replace this soon) ---
 // /tools/analyze meal route is a placeholder route - it just echoes a test response for now
 app.post("/tools/analyze_meal", async (req, res) => {
-    try {
-        const { query } = req.body || {};
-        if (!query) return res.status(400).json({ ok:false, error:"Missing 'query'" });
+  try {
+    const { query } = req.body || {};
+    if (!query)
+      return res.status(400).json({ ok: false, error: "Missing 'query'" });
 
-        const result = await analyzeMeal(query);
-        res.json({ ok: true, source: "openfoodfacts", ...result });
-    } catch (e) {
-        res.status(500).json({ ok:false, error: e.message })
-    }
-  });
+    const result = await analyzeMeal(query);
+    res.json({ ok: true, source: "openfoodfacts", ...result });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
 
 app.post("/tools/predict_neurochemistry", (req, res) => {
-    try {
-        const { nutrients } = req.body || {};
-        if (!nutrients) {
-            return res.status(400).json({ ok: false, error: "Missing 'nutrients' object"})
-        }
-        const profile = predictNeurochemistry(nutrients);
-        res.json({ ok: true, profile });
-    } catch (e) {
-        res.status(500).json({ ok: false, error: e.message });
+  try {
+    const { nutrients } = req.body || {};
+    if (!nutrients) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "Missing 'nutrients' object" });
     }
+    const profile = predictNeurochemistry(nutrients);
+    res.json({ ok: true, profile });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
 
 app.post("/tools/explain_effects", (req, res) => {
-    try {
-        const { profile } = req.body || {};
-        if (!profile)
-            return res.status(400).json({ ok: false, error: "Missing 'profile' object" });
+  try {
+    const { profile } = req.body || {};
+    if (!profile)
+      return res
+        .status(400)
+        .json({ ok: false, error: "Missing 'profile' object" });
 
-        const text = explainEffects(profile);
-        res.json({ ok: true, explanation: text });
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ ok: false, error: e.message });
-    }
-})
+    const text = explainEffects(profile);
+    res.json({ ok: true, explanation: text });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
 
 // --- Start the server ---
 const port = process.env.PORT || 3000;
