@@ -115,6 +115,41 @@ app.post("/tools/explain_effects", (req, res) => {
   }
 });
 
+// --- MCP-style tool call endpoint (just for explain_effects) ---
+// This demonstrates the MCP pattern without changing existing endpoints
+app.post("/tools/call", (req, res) => {
+  try {
+    const { name, arguments: args } = req.body || {};
+
+    if (name === "explain_effects") {
+      if (!args?.profile) {
+        return res.status(400).json({
+          ok: false,
+          error: "Missing 'profile' argument",
+        });
+      }
+      const explanation = explainEffects(args.profile);
+      return res.json({
+        ok: true,
+        tool: "explain_effects",
+        result: { explanation },
+      });
+    }
+
+    // For now, only explain_effects is supported via MCP style
+    return res.status(400).json({
+      ok: false,
+      error: `Tool '${name}' not supported via MCP-style endpoint yet. Try /tools/explain_effects`,
+    });
+  } catch (e) {
+    console.error("MCP-style tool execution error:", e);
+    res.status(500).json({
+      ok: false,
+      error: e.message,
+    });
+  }
+});
+
 // --- Start the server ---
 const port = process.env.PORT || 3000;
 // app.listen(...) starts my server so it listens on port 3000
