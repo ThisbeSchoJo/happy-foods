@@ -136,10 +136,25 @@ app.post("/tools/call", (req, res) => {
       });
     }
 
-    // For now, only explain_effects is supported via MCP style
+    if (name === "predict_neurochemistry") {
+      if (!args?.nutrients) {
+        return res.status(400).json({
+          ok: false,
+          error: "Missing 'nutrients' argument",
+        });
+      }
+      const profile = predictNeurochemistry(args.nutrients);
+      return res.json({
+        ok: true,
+        tool: "predict_neurochemistry",
+        result: { profile },
+      });
+    }
+
+    // For now, only explain_effects and predict_neurochemistry are supported via MCP style
     return res.status(400).json({
       ok: false,
-      error: `Tool '${name}' not supported via MCP-style endpoint yet. Try /tools/explain_effects`,
+      error: `Tool '${name}' not supported via MCP-style endpoint yet. Try /tools/${name}`,
     });
   } catch (e) {
     console.error("MCP-style tool execution error:", e);
