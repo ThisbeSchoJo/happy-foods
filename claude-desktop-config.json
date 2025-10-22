@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "happy-foods": {
+      "command": "node",
+      "args": [
+        "/Users/thisbescholfield-johnson/Development/code/2025/happy-foods/src/mcp-server.js"
+      ],
+      "env": {}
+    }
+  }
+}
