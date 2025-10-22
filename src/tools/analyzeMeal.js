@@ -143,9 +143,9 @@ function extractNutrientsPerServing(product) {
 // In summation: it's a public tool that analyzes a free-text meal via OFF, returning nutrient estimates per serving.
 export async function analyzeMeal(query) {
     const product = await searchTopProduct(query);
-    console.log("RAW product", JSON.stringify(product, null, 2));
+    // console.log("RAW product", JSON.stringify(product, null, 2));
     const nutrients = extractNutrientsPerServing(product);
-    console.log("NUTRIENTS", nutrients)
+    // console.log("NUTRIENTS", nutrients)
   
     return {
       product_name: product.product_name || query,

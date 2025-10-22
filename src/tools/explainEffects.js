@@ -13,7 +13,7 @@ export function explainEffects(profile) {
     else if (main === "dopamine")
         summary = "This meal may support motivation and focus.";
     else if (main === "gaba")
-        summary = "this meal may promote relaxation and reduced stress.";
+        summary = "This meal may promote relaxation and reduced stress.";
     else if (main === "acetylcholine")
         summary = "This meal may aid memory and mental clarity.";
 

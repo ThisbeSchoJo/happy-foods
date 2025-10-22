@@ -1,10 +1,10 @@
 {
   "name": "happy-foods",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/mcp-server.js",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "dev": "node --watch src/mcp-server.js",
+    "start": "node src/mcp-server.js"
   },
   "keywords": [],
   "author": "",
@@ -13,8 +13,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.20.1",
     "axios": "^1.12.2",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "dotenv": "^17.2.3"
   },
   "type": "module"
 }
